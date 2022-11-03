@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -17,49 +19,91 @@ class MyApp extends StatelessWidget {
 }
 
 class CounterCubit extends Cubit<int> {
-  CounterCubit({this.number = 0}) : super(number);
+  CounterCubit({this.data = 0}) : super(data);
 
-  int number;
+  int data;
+  int? currentData;
+  int? nextData;
 
   void increment() {
     emit(state + 1);
   }
 
   void decrement() {
-    emit(state - 1);
+    emit(state + -1);
+  }
+
+  @override
+  void onChange(Change<int> change) {
+    // TODO: implement onChange
+    super.onChange(change);
+
+    log(change.toString());
+    currentData = change.currentState;
+    nextData = change.nextState;
+  }
+
+  @override
+  void onError(Object error, StackTrace stackTrace) {
+    // TODO: implement onError
+    super.onError(error, stackTrace);
+    print(error);
   }
 }
 
 class HomePage extends StatelessWidget {
-  CounterCubit counter = CounterCubit(number: 100);
+  HomePage({super.key});
+
+  CounterCubit counter = CounterCubit();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Cubit App",
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text("Observer"), centerTitle: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           StreamBuilder(
-            initialData: counter.number,
             stream: counter.stream,
+            initialData: counter.data,
             builder: (context, snapshot) {
-              return Text(
-                "${snapshot.data}",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 50,
-                ),
+              return Column(
+                children: [
+                  Text(
+                    "${snapshot.data}",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Current: "),
+                          Text(counter.currentData == null
+                              ? 'default_value'
+                              : counter.currentData.toString()),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Next: "),
+                          Text(counter.nextData == null
+                              ? 'default_value'
+                              : counter.nextData.toString()),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               );
             },
           ),
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
           Row(
@@ -69,10 +113,13 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   counter.decrement();
                 },
-                child: const Text("-",
-                    style: TextStyle(
-                      fontSize: 30,
-                    )),
+                child: Text(
+                  "-",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
               ),
               const SizedBox(
                 width: 10,
@@ -81,10 +128,11 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   counter.increment();
                 },
-                child: const Text(
+                child: Text(
                   "+",
                   style: TextStyle(
-                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
               ),
