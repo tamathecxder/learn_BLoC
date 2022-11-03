@@ -11,37 +11,35 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BLoC Builder"),
+        title: const Text("BLoC Listener"),
+        centerTitle: true,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BlocBuilder<Counter, int>(
+          BlocListener<Counter, int>(
             bloc: counter,
-            buildWhen: (prev, curr) => curr % 2 == 0 ? true : false,
-            builder: (context, state) {
-              return Text(
-                "$state",
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
+            listener: (context, state) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("State saat ini adalah: $state"),
                 ),
               );
             },
+            listenWhen: (previous, current) => current % 2 == 0 ? true : false,
+            child: BlocBuilder<Counter, int>(
+              bloc: counter,
+              builder: (context, state) {
+                return Text(
+                  "$state",
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            ),
           ),
-          // StreamBuilder(
-          //   initialData: counter.init,
-          //   stream: counter.stream,
-          //   builder: (context, snapshot) {
-          //     return Text(
-          //       "${snapshot.data}",
-          //       style: const TextStyle(
-          //         fontSize: 50,
-          //         fontWeight: FontWeight.bold,
-          //       ),
-          //     );
-          //   },
-          // ),
           const SizedBox(
             height: 30,
           ),
@@ -52,7 +50,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   counter.decrement();
                 },
-                child: Text(
+                child: const Text(
                   "-",
                   style: TextStyle(
                     fontSize: 20,
