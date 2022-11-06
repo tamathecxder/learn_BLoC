@@ -1,73 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
-import 'package:learn_bloc/widgets/container_widget.dart';
+import 'package:learn_bloc/widgets/amber.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Counter state = BlocProvider.of<Counter>(context);
-
+    Counter counter = BlocProvider.of<Counter>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BLoC Provider"),
+        title: const Text("Dependency Injection"),
+        centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.lightBlueAccent,
                 child: InkWell(
                   onTap: () {
-                    state.decrement();
+                    counter.decrement();
                   },
                   child: const SizedBox(
+                    width: 100,
                     height: 100,
-                    width: 70,
-                    child: Center(
-                      child: Text(
-                        "-",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
+                    child: Icon(
+                      Icons.remove,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              const ContainerWidget(),
+              const AmberWidget(),
               Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.lightBlueAccent,
                 child: InkWell(
                   onTap: () {
-                    state.increment();
+                    counter.increment();
                   },
                   child: const SizedBox(
+                    width: 100,
                     height: 100,
-                    width: 70,
-                    child: Center(
-                      child: Text(
-                        "+",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
