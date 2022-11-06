@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
+import 'package:learn_bloc/pages/other.dart';
 import 'package:learn_bloc/widgets/amber.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,10 +10,27 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Counter counter = BlocProvider.of<Counter>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dependency Injection"),
         centerTitle: true,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BlocProvider.value(
+                value: counter,
+                child: const OtherPage(),
+              ),
+            ),
+          );
+        },
+        child: const Icon(
+          Icons.navigate_next,
+          size: 28,
+        ),
       ),
       body: Center(
         child: Padding(
