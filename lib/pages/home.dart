@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
+import 'package:learn_bloc/bloc/theme.dart';
 import 'package:learn_bloc/pages/other.dart';
 import 'package:learn_bloc/widgets/amber.dart';
 
@@ -10,11 +13,23 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Counter counter = BlocProvider.of<Counter>(context);
+    ThemeBloc myTheme = BlocProvider.of<ThemeBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dependency Injection"),
-        centerTitle: true,
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              myTheme.changeTheme();
+              log(myTheme.state.toString());
+            },
+            icon: Icon(
+              myTheme.state == true ? Icons.dark_mode : Icons.light_mode,
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
