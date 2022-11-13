@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learn_bloc/bloc/counter.dart';
 import 'package:learn_bloc/bloc/theme.dart';
 import 'package:learn_bloc/pages/other.dart';
-import 'package:learn_bloc/widgets/amber.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -17,7 +16,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Dependency Injection"),
+        title: const Text("Multi Bloc Listener"),
         centerTitle: false,
         actions: [
           IconButton(
@@ -51,41 +50,79 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Material(
-                color: Colors.lightBlueAccent,
-                child: InkWell(
-                  onTap: () {
-                    counter.decrement();
-                  },
-                  child: const SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.white,
-                    ),
+              MultiBlocListener(
+                listeners: [
+                  BlocListener<Counter, int>(
+                    listener: (context, state) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Angka state: $state"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    listenWhen: (previous, current) {
+                      if (current > 10) {
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    },
                   ),
+                  BlocListener<ThemeBloc, bool>(
+                    listener: (context, state) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Berganti Tema"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    listenWhen: (previous, current) {
+                      if (current == false) {
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    },
+                  ),
+                ],
+                child: BlocBuilder<Counter, int>(
+                  bloc: counter,
+                  builder: (context, state) {
+                    return Text(
+                      "$state",
+                      style: const TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
                 ),
               ),
-              const AmberWidget(),
-              Material(
-                color: Colors.lightBlueAccent,
-                child: InkWell(
-                  onTap: () {
-                    counter.increment();
-                  },
-                  child: const SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      counter.decrement();
+                    },
+                    icon: const Icon(
+                      Icons.remove,
                     ),
                   ),
-                ),
+                  IconButton(
+                    onPressed: () {
+                      counter.increment();
+                    },
+                    icon: const Icon(
+                      Icons.add,
+                    ),
+                  )
+                ],
               ),
             ],
           ),
